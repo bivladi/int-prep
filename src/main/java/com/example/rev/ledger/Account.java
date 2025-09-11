@@ -21,7 +21,7 @@ public class Account {
         lock = new ReentrantLock();
     }
 
-    public synchronized boolean withdraw(BigDecimal amount) {
+    public boolean withdraw(BigDecimal amount) {
         if (amount.compareTo(BigDecimal.ZERO) < 0) {
             return false;
         }
@@ -41,7 +41,7 @@ public class Account {
         }
     }
 
-    public synchronized boolean deposit(BigDecimal amount) {
+    public boolean deposit(BigDecimal amount) {
         if (amount.compareTo(BigDecimal.ZERO) < 0) {
             return false;
         }

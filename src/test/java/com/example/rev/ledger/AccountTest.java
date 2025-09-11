@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -51,7 +52,7 @@ class AccountTest {
     }
 
     @Test
-    public void concurrentDepositWithdraw() {
+    public void concurrentDepositWithdraw() throws InterruptedException {
         final var account = new Account(new BigDecimal(1000));
         final var executorService = Executors.newFixedThreadPool(2);
         executorService.submit(() -> {
@@ -64,6 +65,8 @@ class AccountTest {
                 account.withdraw(new BigDecimal(10));
             }
         });
+        executorService.shutdown();
+        assertTrue(executorService.awaitTermination(1000, TimeUnit.MILLISECONDS));
         assertEquals(new BigDecimal(1000), account.getBalance());
     }
 }
