@@ -5,9 +5,6 @@ import java.util.Objects;
 
 public class Ledger {
 
-    public Ledger() {
-    }
-
     public boolean transfer(Account from, Account to, BigDecimal amount) {
         if (Objects.isNull(from) || Objects.isNull(to) || Objects.isNull(amount)) {
             throw new IllegalArgumentException();
@@ -15,10 +12,19 @@ public class Ledger {
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
             return false;
         }
-        if (!from.withdraw(amount)) {
-            return false;
+        var fromLock = from.id < to.id ? from.lock : to.lock;
+        var toLock = from.id < to.id ? to.lock : from.lock;
+        fromLock.lock();
+        toLock.lock();
+        try {
+            if (!from.withdraw(amount)) {
+                return false;
+            }
+            to.deposit(amount);
+            return true;
+        } finally {
+            toLock.unlock();
+            fromLock.unlock();
         }
-        to.deposit(amount);
-        return true;
     }
 }

@@ -14,40 +14,40 @@ class AccountTest {
 
     @Test
     public void accountBalanceHaveToBePositive() {
-        assertThrows(IllegalArgumentException.class, () -> new Account(new BigDecimal(-10)));
+        assertThrows(IllegalArgumentException.class, () -> new Account(1, new BigDecimal(-10)));
     }
 
     @Test
     public void withdrawShouldDecreaseBalance() {
-        final var account = new Account(new BigDecimal(100));
+        final var account = new Account(1, new BigDecimal(100));
         assertTrue(account.withdraw(new BigDecimal(50)));
         assertEquals(new BigDecimal(50), account.getBalance());
     }
 
     @Test
     public void withdrawShouldReturnFalseWhenNegativeAmount() {
-        final var account = new Account(new BigDecimal(100));
+        final var account = new Account(1, new BigDecimal(100));
         assertFalse(account.withdraw(new BigDecimal(-50)));
         assertEquals(new BigDecimal(100), account.getBalance());
     }
 
     @Test
     public void withdrawShouldReturnFalseWhenAmountIsBiggerThanBalance() {
-        final var account = new Account(new BigDecimal(10));
+        final var account = new Account(1, new BigDecimal(10));
         assertFalse(account.withdraw(new BigDecimal(50)));
         assertEquals(new BigDecimal(10), account.getBalance());
     }
 
     @Test
     public void depositShouldIncreaseBalance() {
-        final var account = new Account();
+        final var account = new Account(1);
         assertTrue(account.deposit(new BigDecimal(100)));
         assertEquals(new BigDecimal(100), account.getBalance());
     }
 
     @Test
     public void depositShouldReturnFalseWhenAmountIsNegative() {
-        final var account = new Account();
+        final var account = new Account(1);
         assertFalse(account.deposit(new BigDecimal(-10)));
         assertEquals(BigDecimal.ZERO, account.getBalance());
     }
@@ -101,20 +101,20 @@ class AccountTest {
      */
     @Test
     public void concurrentDepositWithdraw() throws InterruptedException {
-        final var account = new Account(new BigDecimal(1000));
+        final var account = new Account(1, new BigDecimal(1000));
         final var executorService = Executors.newFixedThreadPool(2);
-        final Future<?> f1 = executorService.submit(() -> {
+        executorService.submit(() -> {
             for (int i = 0; i < 10000; i++) {
                 account.deposit(new BigDecimal(10));
             }
         });
-        final Future<?> submit = executorService.submit(() -> {
+        executorService.submit(() -> {
             for (int i = 0; i < 10000; i++) {
-                account.withdraw(new BigDecimal(10));
+                account.deposit(new BigDecimal(10));
             }
         });
         executorService.shutdown();
         assertTrue(executorService.awaitTermination(1000, TimeUnit.MILLISECONDS));
-        assertEquals(new BigDecimal(1000), account.getBalance());
+        assertEquals(new BigDecimal(201000), account.getBalance());
     }
 }

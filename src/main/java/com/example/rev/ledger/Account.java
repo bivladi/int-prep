@@ -6,36 +6,34 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Account {
+    public int id;
+    public ReentrantLock lock;
     private BigDecimal balance;
-    private final ReentrantLock lock;
 
-    public Account() {
-        this(BigDecimal.ZERO);
+    public Account(int id) {
+        this(id, BigDecimal.ZERO);
     }
 
-    public Account(BigDecimal balance) {
+    public Account(int id, BigDecimal balance) {
         if (balance.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException();
         }
+        this.id = id;
+        this.lock = new ReentrantLock();
         this.balance = balance;
-        lock = new ReentrantLock();
     }
 
     public boolean withdraw(BigDecimal amount) {
         if (amount.compareTo(BigDecimal.ZERO) < 0) {
             return false;
         }
+        lock.lock();
         try {
-            if (!lock.tryLock(1000, TimeUnit.MILLISECONDS)) {
-                return false;
-            }
             if (balance.compareTo(amount) < 0) {
                 return false;
             }
             this.balance = this.balance.subtract(amount);
             return true;
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
         } finally {
             lock.unlock();
         }
@@ -45,14 +43,10 @@ public class Account {
         if (amount.compareTo(BigDecimal.ZERO) < 0) {
             return false;
         }
+        lock.lock();
         try {
-            if (!lock.tryLock(1000, TimeUnit.MILLISECONDS)) {
-                return false;
-            }
             this.balance = this.balance.add(amount);
             return true;
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
         } finally {
             lock.unlock();
         }
@@ -60,9 +54,5 @@ public class Account {
 
     public BigDecimal getBalance() {
         return this.balance;
-    }
-
-    public Lock getLock() {
-        return this.lock;
     }
 }
