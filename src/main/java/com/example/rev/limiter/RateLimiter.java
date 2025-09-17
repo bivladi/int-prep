@@ -19,7 +19,6 @@ public class RateLimiter {
         }
         this.limit = limit;
         ipToCountMap = new ConcurrentHashMap<>();
-        ipToCountMap.compute()
         this.executorService = Executors.newScheduledThreadPool(1);
         this.executorService.scheduleAtFixedRate(
                 this::resetCounts,
