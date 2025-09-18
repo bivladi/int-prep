@@ -6,11 +6,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.*;
+class RateLimiterAsyncCheckTest {
 
-class RateLimiterTest {
-
-    private static final Logger log = LoggerFactory.getLogger(RateLimiterTest.class);
+    private static final Logger log = LoggerFactory.getLogger(RateLimiterAsyncCheckTest.class);
 
     @Test
     public void test() throws InterruptedException {

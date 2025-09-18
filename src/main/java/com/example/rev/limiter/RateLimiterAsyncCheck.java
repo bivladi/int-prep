@@ -1,16 +1,18 @@
 package com.example.rev.limiter;
 
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.*;
 
-public class RateLimiter {
+/*
+    Has scheduled background thread to remove map data
+ */
+public class RateLimiterAsyncCheck {
 
     private final ConcurrentHashMap<String, Long> ipToCountMap;
     private final long limit;
     private final ScheduledExecutorService executorService;
 
-    public RateLimiter(Long limit, Long period, TimeUnit timeUnit) {
+    public RateLimiterAsyncCheck(Long limit, Long period, TimeUnit timeUnit) {
         if (Objects.isNull(limit) || Objects.isNull(period) || Objects.isNull(timeUnit)) {
             throw new IllegalArgumentException("Arguments must be not null");
         }
