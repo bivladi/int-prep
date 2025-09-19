@@ -11,10 +11,6 @@ public class RoundRobinRollingStrategy implements RollingStrategy {
         this.index = new AtomicInteger(0);
     }
 
-    public RoundRobinRollingStrategy(AtomicInteger index) {
-        this.index = index;
-    }
-
     @Override
     public String next(List<String> elements) {
         if (elements.isEmpty()) {
