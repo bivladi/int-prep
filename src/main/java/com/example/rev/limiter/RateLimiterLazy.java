@@ -76,9 +76,5 @@ public class RateLimiterLazy {
     }
 
     private record Token(long count, long startTime) {
-        @Override
-        public String toString() {
-            return "{count: " + count + ", startTime: " + startTime + "}";
-        }
     }
 }

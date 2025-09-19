@@ -67,7 +67,7 @@ public class LoadBalancer<T> {
             if (items.isEmpty()) {
                 throw new RuntimeException("List is empty");
             }
-            final var idx = index.getAndIncrement() % items.size();
+            final var idx = index.get() == Integer.MAX_VALUE ? index.getAndIncrement() : index.getAndIncrement() % items.size();
             return items.get(idx);
         } catch (InterruptedException ex) {
             throw new RuntimeException(ex);
